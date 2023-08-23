@@ -17,7 +17,7 @@ public class OrderDTO implements Serializable {
     private int paymentAmount;
     private status orderStatusId;
     private long creditCardNumber;
-    //private LocalDate expiryOn;
+    private String expiryOn;
     private String cvc;
 
     private PaymentType paymentType;
