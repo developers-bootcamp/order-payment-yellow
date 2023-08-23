@@ -1,5 +1,6 @@
 package com.sap.orderpaymentyellow.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -21,8 +22,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public TopicExchange exchange() {
-        return new TopicExchange(exchange);
+    public DirectExchange exchange() {
+        return new DirectExchange(exchange);
     }
 
     @Bean
@@ -35,6 +36,9 @@ public class RabbitMQConfig {
 
     @Bean
     public MessageConverter converter(){
+//        System.out.println("Updating spring's object mapper.");
+//
+        ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
         return new Jackson2JsonMessageConverter();
     }
     @Bean
