@@ -22,10 +22,9 @@ public class OrderPayment {
     private double amount;
     private int invoiceNumber;
     private PaymentType paymentType;
+    private long creditCardNumber;
+    private String expiryOn;
+    private String cvc;
     private AuditData auditData;
-
-    public enum PaymentType {
-        CREDIT,
-        DEBIT
-    }
+    public enum PaymentType {CREDIT,DEBIT}
 }
