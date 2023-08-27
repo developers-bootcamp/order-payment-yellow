@@ -20,7 +20,7 @@ public class OrderPayment {
     private String orderId;
     private String userId;
     private double amount;
-    private int invoiceNumber;
+    private String invoiceNumber;
     private PaymentType paymentType;
     private long creditCardNumber;
     private String expiryOn;
