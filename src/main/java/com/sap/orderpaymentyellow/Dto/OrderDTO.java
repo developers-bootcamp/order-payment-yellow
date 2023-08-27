@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class OrderDTO implements Serializable {
     private String orderId ;
     private String customerId ;
-    private int paymentAmount;
+    private double paymentAmount;
     private status orderStatusId;
     private long creditCardNumber;
     private String expiryOn;
