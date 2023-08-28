@@ -1,6 +1,10 @@
 package com.sap.orderpaymentyellow.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -8,7 +12,9 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class RabbitMQConfig {
     @Value("${rabbitmq.queue.producer.name}")
     private String queue;
@@ -38,7 +44,14 @@ public class RabbitMQConfig {
     public MessageConverter converter(){
 //        System.out.println("Updating spring's object mapper.");
 //
-        ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
+        // ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
+        // with 3.0 (or with 2.10 as alternative)
+//        ObjectMapper mapper = JsonMapper.builder() // or different mapper for other format
+//                .addModule(new ParameterNamesModule())
+//                .addModule(new Jdk8Module())
+//                .addModule(new JavaTimeModule())
+//                // and possibly other configuration, modules, then:
+//                .build();
         return new Jackson2JsonMessageConverter();
     }
     @Bean
@@ -48,5 +61,4 @@ public class RabbitMQConfig {
         return rabbitTemplate;
     }
 }
-
 

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDTO implements Serializable {
+public class OrderDTO {
     private String orderId ;
     private String customerId ;
     private double paymentAmount;

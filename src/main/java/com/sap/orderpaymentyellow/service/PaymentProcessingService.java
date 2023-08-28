@@ -1,20 +1,36 @@
 package com.sap.orderpaymentyellow.service;
 
+import com.sap.orderpaymentyellow.Dao.PaymentRepository;
 import com.sap.orderpaymentyellow.Dto.OrderDTO;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.sap.orderpaymentyellow.Dto.OrderMapper;
+import com.sap.orderpaymentyellow.model.AuditData;
+import com.sap.orderpaymentyellow.model.OrderPayment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
 
+@Service
 public class PaymentProcessingService {
+    @Autowired
+    private PaymentRepository paymentRepository;
+    @Autowired
+    private RabbitMQProducer rabbitMQProducer;
 
-    public void PaymentProcessing(OrderDTO order){
-        String mockServerUrl = "https://2a9336fa-408a-40db-89e1-65c49a4dac90.mock.pstmn.io/payment?paymentAmount="+order.getPaymentAmount()+"&creditCardNumber="+order.getCreditCardNumber()+"&cvc="+order.getCvc()+"&expiryDate="+order.getExpiryOn();
-
+    public void PaymentProcessing(OrderDTO order) {
+        String mockServerUrl = "https://2a9336fa-408a-40db-89e1-65c49a4dac90.mock.pstmn.io/payment?paymentAmount=" + order.getPaymentAmount() + "&creditCardNumber=" + order.getCreditCardNumber() + "&cvc=" + order.getCvc() + "&expiryDate=" + order.getExpiryOn();
+        //     OrderPayment orderPayment = OrderMapper.INSTANCE.OrderDTOToOrderPayment(order);
+        AuditData auditData = new AuditData(LocalDateTime.now());
+        OrderPayment orderPayment = new OrderPayment(order.getOrderId(), order.getCustomerId(), order.getPaymentAmount(), "", OrderPayment.PaymentType.DEBIT, order.getCreditCardNumber(),
+                order.getCvc(), order.getExpiryOn(), auditData);
         try {
             URL url = new URL(mockServerUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -24,26 +40,28 @@ public class PaymentProcessingService {
 
             int responseCode = connection.getResponseCode();
             System.out.println("Response Code: " + responseCode);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String line;
-        StringBuilder response = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String line;
+            StringBuilder response = new StringBuilder();
 
-        while ((line = reader.readLine()) != null) {
-            response.append(line);
-        }
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
 
-        reader.close();
+            reader.close();
             JsonObject jsonResponse = new Gson().fromJson(response.toString(), JsonObject.class);
             String status = jsonResponse.get("status").getAsString();
-            String invoiceNumber = jsonResponse.get("invoiceNumber").getAsString();
-
-            System.out.println("Status: " + status);
-            System.out.println("Invoice Number: " + invoiceNumber);
-        System.out.println("Response Body: " + response.toString());
-
-        connection.disconnect();
-    } catch (IOException e) {
-        e.printStackTrace();
+            if (status.equals("approved")) {
+                String invoiceNumber = jsonResponse.get("invoiceNumber").getAsString();
+                orderPayment.setInvoiceNumber(invoiceNumber);
+              //  paymentRepository.save(orderPayment);
+            }
+            else
+               order.setOrderStatusId(OrderDTO.status.cancelled);
+            rabbitMQProducer.sendMessage(order);
+            connection.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-}
 }
