@@ -1,10 +1,6 @@
 package com.sap.orderpaymentyellow.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -22,6 +18,7 @@ public class RabbitMQConfig {
     private String exchange;
     @Value("${rabbitmq.routing.producer.key}")
     private String routingKey;
+
     @Bean
     public Queue queue() {
         return new Queue(queue);
@@ -42,20 +39,20 @@ public class RabbitMQConfig {
 
 
     @Bean
-    public MessageConverter converter(){
+    public MessageConverter converter() {
         return new Jackson2JsonMessageConverter();
     }
+
     @Bean
-    public AmqpTemplate amqpTemplate(ConnectionFactory connectionFactory){
-        RabbitTemplate rabbitTemplate=new RabbitTemplate(connectionFactory);
+    public AmqpTemplate amqpTemplate(ConnectionFactory connectionFactory) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(converter());
         return rabbitTemplate;
     }
-    @Bean
-    public MessageConverter messageConverter()
-    {
-        ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
 
+    @Bean
+    public MessageConverter messageConverter() {
+        ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
         return new Jackson2JsonMessageConverter(mapper);
     }
 }

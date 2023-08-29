@@ -5,7 +5,6 @@ import com.sap.orderpaymentyellow.Dto.OrderDTO;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.sap.orderpaymentyellow.Dto.OrderMapper;
 import com.sap.orderpaymentyellow.model.AuditData;
 import com.sap.orderpaymentyellow.model.OrderPayment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ public class PaymentProcessingService {
 
     public void PaymentProcessing(OrderDTO order) {
         String mockServerUrl = "https://2a9336fa-408a-40db-89e1-65c49a4dac90.mock.pstmn.io/payment?paymentAmount=" + order.getPaymentAmount() + "&creditCardNumber=" + order.getCreditCardNumber() + "&cvc=" + order.getCvc() + "&expiryDate=" + order.getExpiryOn();
-        //     OrderPayment orderPayment = OrderMapper.INSTANCE.OrderDTOToOrderPayment(order);
         AuditData auditData = new AuditData(LocalDateTime.now());
         OrderPayment orderPayment = new OrderPayment(order.getOrderId(), order.getCustomerId(), order.getPaymentAmount(), "", OrderPayment.PaymentType.DEBIT, order.getCreditCardNumber(),
                 order.getCvc(), order.getExpiryOn(), auditData);
@@ -54,10 +52,9 @@ public class PaymentProcessingService {
             if (status.equals("approved")) {
                 String invoiceNumber = jsonResponse.get("invoiceNumber").getAsString();
                 orderPayment.setInvoiceNumber(invoiceNumber);
-              //  paymentRepository.save(orderPayment);
-            }
-            else
-               order.setOrderStatusId(OrderDTO.status.cancelled);
+                //  paymentRepository.save(orderPayment);
+            } else
+                order.setOrderStatusId(OrderDTO.status.cancelled);
             rabbitMQProducer.sendMessage(order);
             connection.disconnect();
         } catch (IOException e) {

@@ -16,5 +16,6 @@ public class SendPaymentDTO implements Serializable {
     private long creditCardNumber;
     private String expiryOn;
     private String cvc;
+
     public enum status {New, cancelled, approved, charging, packing, delivered}
 }

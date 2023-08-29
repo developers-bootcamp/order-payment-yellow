@@ -14,13 +14,13 @@ public class RabbitMQProducer {
     private String exchange;
     @Value("${rabbitmq.routing.producer.key}")
     private String routingKey;
-    private static  final Logger LOGGER= LoggerFactory.getLogger(RabbitMQProducer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQProducer.class);
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
 
-    public void sendMessage(OrderDTO o){
-        LOGGER.info(String.format("message sent -> %s ",o.toString()));
-        rabbitTemplate.convertAndSend(exchange,routingKey,o);
+    public void sendMessage(OrderDTO o) {
+        LOGGER.info(String.format("message sent -> %s ", o.toString()));
+        rabbitTemplate.convertAndSend(exchange, routingKey, o);
     }
 }

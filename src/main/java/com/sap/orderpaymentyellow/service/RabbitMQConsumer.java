@@ -7,13 +7,15 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Service
 public class RabbitMQConsumer {
-    private static  final Logger LOGGER= LoggerFactory.getLogger(RabbitMQConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQConsumer.class);
     @Autowired
     private PaymentProcessingService paymentProcessingService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
     @RabbitListener(queues = {"${rabbitmq.queue.name}"})
     public void consume(OrderDTO message) {
         paymentProcessingService.PaymentProcessing(message);
@@ -29,8 +31,8 @@ public class RabbitMQConsumer {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
- //   }
- }
+    //   }
+}
 
 
 
