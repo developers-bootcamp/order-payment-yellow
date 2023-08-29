@@ -15,16 +15,21 @@ public class RabbitMQConsumer {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     @RabbitListener(queues = {"${rabbitmq.queue.name}"})
-    public void receiveMessage(byte[] messageBytes) {
-        try {
-            String messageJson = new String(messageBytes);
-            OrderDTO message = objectMapper.readValue(messageJson, OrderDTO.class);
-            paymentProcessingService.PaymentProcessing(message);
-            LOGGER.info(String.format("message received: -> %s",messageJson));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void consume(OrderDTO message) {
+        paymentProcessingService.PaymentProcessing(message);
+        LOGGER.info(String.format("Received message -> %s ", message));
+
     }
+//    public void receiveMessage(byte[] messageBytes) {
+//        try {
+//            String messageJson = new String(messageBytes);
+////            OrderDTO message = objectMapper.readValue(messageJson, OrderDTO.class);
+////            paymentProcessingService.PaymentProcessing(message);
+//            LOGGER.info(String.format("message received: -> %s",messageJson));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+ //   }
  }
 
 

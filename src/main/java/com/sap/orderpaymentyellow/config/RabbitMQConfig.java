@@ -40,18 +40,9 @@ public class RabbitMQConfig {
                 .with(routingKey);
     }
 
+
     @Bean
     public MessageConverter converter(){
-//        System.out.println("Updating spring's object mapper.");
-//
-        // ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
-        // with 3.0 (or with 2.10 as alternative)
-//        ObjectMapper mapper = JsonMapper.builder() // or different mapper for other format
-//                .addModule(new ParameterNamesModule())
-//                .addModule(new Jdk8Module())
-//                .addModule(new JavaTimeModule())
-//                // and possibly other configuration, modules, then:
-//                .build();
         return new Jackson2JsonMessageConverter();
     }
     @Bean
@@ -59,6 +50,13 @@ public class RabbitMQConfig {
         RabbitTemplate rabbitTemplate=new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(converter());
         return rabbitTemplate;
+    }
+    @Bean
+    public MessageConverter messageConverter()
+    {
+        ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
+
+        return new Jackson2JsonMessageConverter(mapper);
     }
 }
 
