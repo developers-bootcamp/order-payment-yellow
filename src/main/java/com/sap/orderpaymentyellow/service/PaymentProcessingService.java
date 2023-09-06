@@ -27,7 +27,7 @@ public class PaymentProcessingService {
     public void PaymentProcessing(OrderDTO order) {
         String mockServerUrl = "https://2a9336fa-408a-40db-89e1-65c49a4dac90.mock.pstmn.io/payment?paymentAmount=" + order.getPaymentAmount() + "&creditCardNumber=" + order.getCreditCardNumber() + "&cvc=" + order.getCvc() + "&expiryDate=" + order.getExpiryOn();
         AuditData auditData = new AuditData(LocalDateTime.now());
-        OrderPayment orderPayment = new OrderPayment(order.getOrderId(), order.getCustomerId(), order.getPaymentAmount(), "", OrderPayment.PaymentType.DEBIT, order.getCreditCardNumber(),
+        OrderPayment orderPayment = new OrderPayment(order.getOrderId(), order.getCustomerId(), order.getPaymentAmount(),  OrderPayment.PaymentType.DEBIT, order.getCreditCardNumber(),
                 order.getCvc(), order.getExpiryOn(), auditData);
         try {
             URL url = new URL(mockServerUrl);
@@ -52,7 +52,7 @@ public class PaymentProcessingService {
             if (status.equals("approved")) {
                 String invoiceNumber = jsonResponse.get("invoiceNumber").getAsString();
                 orderPayment.setInvoiceNumber(invoiceNumber);
-                //  paymentRepository.save(orderPayment);
+                paymentRepository.save(orderPayment);
             } else
                 order.setOrderStatusId(OrderDTO.status.cancelled);
             rabbitMQProducer.sendMessage(order);
