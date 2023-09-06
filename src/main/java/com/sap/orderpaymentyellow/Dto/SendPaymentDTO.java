@@ -11,19 +11,11 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDTO {
-    private String orderId;
-    private String customerId;
-    private double paymentAmount;
-    private status orderStatusId;
+public class SendPaymentDTO implements Serializable {
+    private int paymentAmount;
     private long creditCardNumber;
     private String expiryOn;
     private String cvc;
-
-    private PaymentType paymentType;
-
-
-    public enum PaymentType {CREDIT, DEBIT}
 
     public enum status {New, cancelled, approved, charging, packing, delivered}
 }
